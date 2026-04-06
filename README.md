@@ -1,6 +1,6 @@
 # JWT Authentication (Spring Boot) with MongoDB
-
-  🚧 This project is currently in progress.
+ ![status](https://img.shields.io/badge/status-in%20progress-yellow)
+ > 🚧 This project is currently in progress.
 
 ## 📌 Overview
 This project is part of my learning journey, where I explore how to design and build backend systems step by step using Spring Boot and JWT authentication.
