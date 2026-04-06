@@ -29,7 +29,7 @@ public class LoggingFilter  implements Filter {
                             log.debug("Header: {}={}", header, req.getHeader(header))
                     );
             //บันทึก Method + URL
-            // 👉 Request
+            // Request
             log.debug("{} {}", req.getMethod(), req.getRequestURI());
 
             //ส่ง request ต่อไปยัง ระบบหลังบ้าน / filter ตัวต่อไป
