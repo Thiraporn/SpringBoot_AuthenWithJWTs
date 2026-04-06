@@ -13,6 +13,7 @@ import com.jwt.authentication.security.jwt.JwtUtils;
 import com.jwt.authentication.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,19 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@RequiredArgsConstructor
 //@RequestMapping("")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
+    private final  AuthenticationManager authenticationManager;
+    private final  UserRepository userRepository;
+    private  final RoleRepository roleRepository;
+    private  final PasswordEncoder encoder;
 
     @Autowired
     JwtUtils jwtUtils;

@@ -1,29 +1,22 @@
 package com.jwt.authentication.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 //MongoDB data format JSON
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Document(collection = "roles")
 public class Role {
     @Id
     private String id;
     private ERole name;
+    private String description;
 
-    public Role() {
-    }
-    public Role(ERole name) {
-        this.name = name;
-    }
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public ERole getName() {
-        return name;
-    }
-    public void setName(ERole name) {
-        this.name = name;
-    }
+
 }

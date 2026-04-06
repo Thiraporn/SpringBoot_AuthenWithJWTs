@@ -23,10 +23,10 @@ import java.util.Set;
 //@RequestMapping("")
 public class RegisterController {
 
-    private  AuthenticationManager authenticationManager;
-    private  UserRepository userRepository;
-    private  RoleRepository roleRepository;
-    private  PasswordEncoder encoder;
+    private final  AuthenticationManager authenticationManager;
+    private final  UserRepository userRepository;
+    private  final RoleRepository roleRepository;
+    private  final PasswordEncoder encoder;
     // ตัวอย่าง GET เพื่อทดสอบ
     @GetMapping("/test-register")
     public String showRegisterPage() {
@@ -53,7 +53,7 @@ public class RegisterController {
         //Set<String> strRoles = signUpRequest.getRoles();
 
         Set<Role> roles = new HashSet<>();
-        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+        Role userRole = roleRepository.findByName(ERole.USER)
                 .orElseThrow(() -> new RuntimeException("Error: Role not found"));
         roles.add(userRole)  ;
         /*if (strRoles == null) {
