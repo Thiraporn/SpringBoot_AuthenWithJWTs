@@ -1,4 +1,4 @@
-package com.jwt.authentication.logger;
+package com.jwt.authentication.exeption;
 
 import com.jwt.authentication.payload.response.ErrorResponse;
 import io.jsonwebtoken.ExpiredJwtException;

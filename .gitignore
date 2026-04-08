@@ -45,4 +45,6 @@ logs/
 ### document ###
 documents/
 
+# JWT Keys
+config/keys/*.pem
 
