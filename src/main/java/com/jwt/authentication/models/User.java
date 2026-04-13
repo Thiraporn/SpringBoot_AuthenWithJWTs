@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -30,14 +31,18 @@ public class User {
     @Size(max = 120)
     private String password;
 
+    private String refreshToken;
+    private Long refreshTokenExpiry;
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    @DBRef
-    @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    //@DBRef
+    //@Builder.Default
+    //private Set<Role> roles = new HashSet<>();
+    private Map<ERole, String>  roles;
 
 
 }

@@ -11,17 +11,17 @@ import java.util.List;
 @Builder
 public class JwtResponse {
 
-    private String token;
+    private String accessToken;
 
     @Builder.Default
     private String type = "Bearer";
 
-    private String id;
     private String username;
+    private String refreshToken;
     private List<String> roles;
-    public JwtResponse(String accessToken, String id, String username , List<String> roles) {
-        this.token = accessToken;
-        this.id = id;
+    public JwtResponse(String accessToken, String refreshToken, String username , List<String> roles) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.username = username;
         this.roles = roles;
     }

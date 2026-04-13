@@ -15,7 +15,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -52,10 +54,12 @@ public class RegisterController {
 
         //Set<String> strRoles = signUpRequest.getRoles();
 
-        Set<Role> roles = new HashSet<>();
+        Map<ERole, String> roles = new HashMap<>();
+
         Role userRole = roleRepository.findByName(ERole.USER)
                 .orElseThrow(() -> new RuntimeException("Error: Role not found"));
-        roles.add(userRole)  ;
+        roles.put(userRole.getName(), userRole.getCode());
+
         /*if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

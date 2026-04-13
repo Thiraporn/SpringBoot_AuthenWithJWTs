@@ -16,6 +16,7 @@ public class Role {
     @Id
     private String id;
     private ERole name;
+    private String code;
     private String description;
 
 

@@ -3,14 +3,21 @@ import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.jwt.authentication.models.User;
 import com.jwt.authentication.security.services.UserDetailsImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +25,7 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.web.util.WebUtils;
 
 
 @Slf4j
@@ -26,6 +34,12 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
 
     @Value("${jwt.expiration.ms}")
     private int jwtExpirationMs;//เวลาหมดอายุของ JWT (มิลลิวินาที)
+
+    @Value("${jwt.refresh.expiration.ms}")
+    private int jwtRefreshExpirationMs;//เวลาหมดอายุของ Refresh JWT (มิลลิวินาที)
+
+    @Autowired
+    private JwtCookieProperties cookieProps;
 
     //รหัสลับสำหรับสร้าง JWT (ต้องเก็บให้ปลอดภัย)
     private final PrivateKey privateKey;
@@ -37,28 +51,41 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
     }
 
     //ตัวสร้าง JWT สำหรับ user 1 คน  //สุดท้าย return สตริง JWT ที่ user จะเก็บไว้
-    public String generateAccessToken(Authentication authentication) {
+   /* public String generateAccessToken(Authentication authentication) {
         //ขั้นตอน:
         //1.ดึงข้อมูล  user จาก Authentication
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
+        return  generateAccessToken(userPrincipal);
+    }*/
+    public String generateAccessToken(UserDetailsImpl userDetails) {
+       return generateToken(userDetails,jwtExpirationMs);
+    }
+    public User generateRefreshToken(UserDetailsImpl userDetails) {
+        long expiry = System.currentTimeMillis() + jwtRefreshExpirationMs;
+        User user = new User();
+        user.setUsername(userDetails.getUsername());
+        user.setRefreshToken(generateToken(userDetails,jwtRefreshExpirationMs));
+        user.setRefreshTokenExpiry(expiry);
+       return user;
+    }
+    public String generateToken(UserDetailsImpl userDetails, int expirationMs) {
         return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
-//                .claim("roles", userPrincipal.getAuthorities().stream()
-//                                   .map(item -> item.getAuthority())
-//                                   .collect(Collectors.toList()))
+                .setSubject((userDetails.getUsername()))
+                .claim("roles", userDetails.getAuthorities().stream()
+                                   .map(item -> item.getAuthority())
+                                   .collect(Collectors.toList()))
                 .setIssuedAt(new Date())
                 //2.กำหนด วันออกบัตร และ วันหมดอายุ
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .setExpiration(new Date((new Date()).getTime() + expirationMs))
                 //3.เซ็นด้วย รหัสลับ (key) เพื่อให้ JWT ปลอดภัย
                 //.signWith(key(), SignatureAlgorithm.HS256)
                 .signWith(privateKey, SignatureAlgorithm.RS256)//generate token (ใช้ private key เท่านั้น)
                 .compact();
     }
-    //แปลง รหัสลับ (jwtSecret) เป็น Key ที่ใช้เซ็น JWT
-//    private Key key() {
-//        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-//    }
+
+
+
     //อ่านชื่อผู้ใช้จาก JWT //ใช้ตอนตรวจสอบว่าใครเข้ามาใช้งาน
     public String getUserNameFromJwtToken(String token) {
         //อ่าน JWT → ดึง ชื่อผู้ใช้ ออกมา
@@ -70,6 +97,8 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
                 .getBody()
                 .getSubject();
     }
+
+
     public List<String> getRolesFromJwt(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(publicKey)
@@ -102,5 +131,54 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
 
         return false;
     }
+
+
+    //create cookie
+    private ResponseCookie generateCookie(String name, String value, String path) {
+        ResponseCookie cookie = ResponseCookie.from(name, value).path(path).maxAge(cookieProps.getMaxAge()).httpOnly(cookieProps.isHttpOnly())
+                .secure(cookieProps.isSecure())
+                .sameSite(cookieProps.getSameSite())
+                .build();
+        return cookie;
+    }
+    //set access token into cookie
+    public ResponseCookie generateJwtCookie(String accessToken) {
+        return generateCookie(cookieProps.getAccessTokenName(), accessToken, cookieProps.getPath());
+    }
+    //set  refresh token into cookie
+    public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
+        return generateCookie(cookieProps.getRefreshTokenName(), refreshToken, cookieProps.getPath());
+    }
+    //remove access token into cookie
+    public ResponseCookie getCleanJwtCookie() {
+        ResponseCookie cookie = ResponseCookie.from(cookieProps.getAccessTokenName(), null).path(cookieProps.getPath()).build();
+        return cookie;
+    }
+    //remove refresh token into cookie
+    public ResponseCookie getCleanJwtRefreshCookie() {
+        ResponseCookie cookie = ResponseCookie.from(cookieProps.getRefreshTokenName(), null).path(cookieProps.getPath()).build();
+        return cookie;
+    }
+    //cookie from http request
+    public String getJwtRefreshFromCookies(HttpServletRequest request) {
+        return getCookieValueByName(request, cookieProps.getRefreshTokenName());
+    }
+
+    //find cookie
+    private String getCookieValueByName(HttpServletRequest request, String name) {
+        Cookie cookie = WebUtils.getCookie(request, name);
+        if (cookie != null) {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    System.out.println(c.getName() + " = " + c.getValue());
+                }
+            }
+            return cookie.getValue();
+        } else {
+            return null;
+        }
+    }
+
 
 }
