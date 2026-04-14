@@ -1,11 +1,13 @@
-package com.jwt.authentication.exeption;
+package com.jwt.authentication.advices;
 
 import com.jwt.authentication.payload.response.ErrorResponse;
+import com.jwt.authentication.services.JwtTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ import java.time.Instant;
 @Slf4j
 @RestControllerAdvice //บอก Spring ว่า นี่คือ handler สำหรับ exception ทั้งระบบ
 public class GlobalExceptionHandler {
+    @Autowired
+    JwtTokenService jwtTokenService;
     // จับ Exception ทั่วไป
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
@@ -66,9 +70,27 @@ public class GlobalExceptionHandler {
 
         return buildResponse(HttpStatus.UNAUTHORIZED, message);
     }
+    //จับ throw custom exception
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
+        // token invalid → clear cookie
+        ResponseCookie clearAccess = jwtTokenService.getCleanJwtCookie();
+        ResponseCookie clearRefresh = jwtTokenService.getCleanJwtRefreshCookie();
 
+        return ResponseEntity.status(ex.getStatus())
+                .headers(headers -> {
+                    headers.add(HttpHeaders.SET_COOKIE, clearAccess.toString());
+                    headers.add(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+                })
+                .body(ErrorResponse.builder()
+                        .status(ex.getStatus().value())
+                        .errorCode(ex.getErrorCode())
+                        .message(ex.getMessage())
+                        .timestamp(System.currentTimeMillis())
+                        .build());
+    }
 
-    // สร้าง Response ใช้ model ErrorResponse ของคุณ
+    // สร้าง Response ใช้ model ErrorResponse
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String message) {
         ErrorResponse error = ErrorResponse.builder()
                 .status(status.value())

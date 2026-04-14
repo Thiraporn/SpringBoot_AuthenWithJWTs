@@ -2,13 +2,12 @@ package com.jwt.authentication.security.jwt;
 import java.io.IOException;
 
 import com.jwt.authentication.security.services.UserDetailsServiceImpl;
+import com.jwt.authentication.services.JwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,7 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class AuthTokenFilter  extends OncePerRequestFilter {
     //การตรวจสอบประกอบด้วย เครื่องมือ(tool) และ ตัวยืนยัน
     @Autowired
-    private JwtUtils jwtUtils;//tool ในการตรวจสอบว่า JWT ถูกต้องไหม
+    private JwtTokenService jwtTokenService;//tool ในการตรวจสอบว่า JWT ถูกต้องไหม
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;//ตัวยืนยัน เครื่องมือตรวจสอบว่า ผู้ใช้นี้มีอยู่จริง และดึงข้อมูลผู้ใช้มา
@@ -34,8 +33,8 @@ public class AuthTokenFilter  extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);// ดึง JWT จากคำขอ (request)
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {//ตรวจสอบว่า JWT มีและ ถูกต้อง
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);//ถ้า JWT ถูกต้อง → ดึง ชื่อผู้ใช้ ออกมา
+            if (jwt != null && jwtTokenService.validateJwtToken(jwt)) {//ตรวจสอบว่า JWT มีและ ถูกต้อง
+                String username = jwtTokenService.getUserNameFromJwtToken(jwt);//ถ้า JWT ถูกต้อง → ดึง ชื่อผู้ใช้ ออกมา
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);//ใช้ชื่อผู้ใช้เพื่อ โหลดข้อมูลผู้ใช้นั้น เช่น สิทธิ์การเข้าถึง
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,

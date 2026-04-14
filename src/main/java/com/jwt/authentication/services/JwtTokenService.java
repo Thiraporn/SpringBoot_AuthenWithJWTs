@@ -1,36 +1,29 @@
-package com.jwt.authentication.security.jwt;
-import java.security.Key;
+package com.jwt.authentication.services;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.jwt.authentication.models.User;
+import com.jwt.authentication.security.jwt.JwtCookieProperties;
 import com.jwt.authentication.security.services.UserDetailsImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.WebUtils;
 
-
+@Service
 @Slf4j
-@Component
-public class JwtUtils {// tool  ในการช่วยตรวจสอบการเข้ามาใช้งานระบบ
+//@Component
+public class JwtTokenService {// tool  ในการช่วยตรวจสอบการเข้ามาใช้งานระบบ
 
     @Value("${jwt.expiration.ms}")
     private int jwtExpirationMs;//เวลาหมดอายุของ JWT (มิลลิวินาที)
@@ -45,19 +38,11 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
 
-    public JwtUtils(PrivateKey privateKey, PublicKey publicKey) {
+    public JwtTokenService(PrivateKey privateKey, PublicKey publicKey) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
     }
 
-    //ตัวสร้าง JWT สำหรับ user 1 คน  //สุดท้าย return สตริง JWT ที่ user จะเก็บไว้
-   /* public String generateAccessToken(Authentication authentication) {
-        //ขั้นตอน:
-        //1.ดึงข้อมูล  user จาก Authentication
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
-        return  generateAccessToken(userPrincipal);
-    }*/
     public String generateAccessToken(UserDetailsImpl userDetails) {
        return generateToken(userDetails,jwtExpirationMs);
     }
@@ -83,8 +68,6 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
                 .signWith(privateKey, SignatureAlgorithm.RS256)//generate token (ใช้ private key เท่านั้น)
                 .compact();
     }
-
-
 
     //อ่านชื่อผู้ใช้จาก JWT //ใช้ตอนตรวจสอบว่าใครเข้ามาใช้งาน
     public String getUserNameFromJwtToken(String token) {
@@ -131,8 +114,6 @@ public class JwtUtils {// tool  ในการช่วยตรวจสอบ
 
         return false;
     }
-
-
     //create cookie
     private ResponseCookie generateCookie(String name, String value, String path) {
         ResponseCookie cookie = ResponseCookie.from(name, value).path(path).maxAge(cookieProps.getMaxAge()).httpOnly(cookieProps.isHttpOnly())

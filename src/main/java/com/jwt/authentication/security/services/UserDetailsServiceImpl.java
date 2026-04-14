@@ -1,16 +1,16 @@
 package com.jwt.authentication.security.services;
 
+import com.jwt.authentication.advices.ApiException;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -21,17 +21,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        //valid user
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ApiException(  HttpStatus.INTERNAL_SERVER_ERROR,  "USER_NOT_FOUND", "User Not Found with username: " + username ));
 
         return UserDetailsImpl.build(user);
     }
     public User createOrUpdateRefreshToken(User userObj) {
-        User user = userRepository.findByUsername(userObj.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        //valid user
+        User user = userRepository.findByUsername(userObj.getUsername()).orElseThrow(() -> new ApiException(  HttpStatus.INTERNAL_SERVER_ERROR,  "USER_NOT_FOUND", "User Not Found with username: " + userObj.getUsername()));
 
-        //String newToken = UUID.randomUUID().toString();
-        //long expiry = System.currentTimeMillis() + userObj.getRefreshTokenExpiry();
+        //set new token
         user.setRefreshToken(userObj.getRefreshToken());
         user.setRefreshTokenExpiry(userObj.getRefreshTokenExpiry());
 
@@ -39,11 +38,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public User verifyExpiration(String token) {
-        User user = userRepository.findByRefreshToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+        //valid user
+        User user = userRepository.findByRefreshToken(token).orElseThrow(() -> new ApiException(  HttpStatus.INTERNAL_SERVER_ERROR,  "TOKEN_NOT_FOUND", "Invalid refresh token" ));
 
         if (user.getRefreshTokenExpiry() < System.currentTimeMillis()) {
-            throw new RuntimeException("Refresh token expired");
+            throw new ApiException(  HttpStatus.INTERNAL_SERVER_ERROR,  "TOKEN_EXPIRED", "Refresh token expired" );
         }
 
         return user;

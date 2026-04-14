@@ -1,95 +1,28 @@
 package com.jwt.authentication.controllers;
 
-import com.jwt.authentication.models.ERole;
-import com.jwt.authentication.models.Role;
-import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.request.SignupRequest;
 import com.jwt.authentication.payload.response.MessageResponse;
-import com.jwt.authentication.repository.RoleRepository;
-import com.jwt.authentication.repository.UserRepository;
+import com.jwt.authentication.services.RegisterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("")
 public class RegisterController {
+    private final RegisterService registerService;
 
-    private final  AuthenticationManager authenticationManager;
-    private final  UserRepository userRepository;
-    private  final RoleRepository roleRepository;
-    private  final PasswordEncoder encoder;
     // ตัวอย่าง GET เพื่อทดสอบ
     @GetMapping("/test-register")
-    public String showRegisterPage() {
-        return "This is the register page";
+    public ResponseEntity<?> showRegisterPage() {
+        return ResponseEntity.ok(new MessageResponse("This is the register page"));
     }
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByUsername(signUpRequest.getUser())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
-        }
-
-        if (userRepository.existsByUsername(signUpRequest.getUser())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        // Create new user's account
-        User user = new User(signUpRequest.getUser(),
-                encoder.encode(signUpRequest.getPwd()));
-
-        //Set<String> strRoles = signUpRequest.getRoles();
-
-        Map<ERole, String> roles = new HashMap<>();
-
-        Role userRole = roleRepository.findByName(ERole.USER)
-                .orElseThrow(() -> new RuntimeException("Error: Role not found"));
-        roles.put(userRole.getName(), userRole.getCode());
-
-        /*if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_EDITOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }*/
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        MessageResponse messageResponse = registerService.register(signUpRequest);
+        return ResponseEntity.ok(messageResponse);
     }
 }
