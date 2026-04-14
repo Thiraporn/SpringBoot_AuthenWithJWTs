@@ -62,10 +62,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleJwtException(Exception ex) {
         log.error("JWT ERROR: {}", ex.getMessage(), ex);
         String message;
-        if (ex instanceof ExpiredJwtException) message = "JWT token is expired";
-        else if (ex instanceof MalformedJwtException) message = "Invalid JWT token";
-        else if (ex instanceof UnsupportedJwtException) message = "Unsupported JWT token";
-        else if (ex instanceof SignatureException) message = "Invalid JWT signature";
+        if (ex instanceof ExpiredJwtException) message = "JWT token is expired: {}"+ex.getMessage();                //1.JWT หมดอายุ (ExpiredJwtException)
+        else if (ex instanceof MalformedJwtException) message = "Invalid JWT token: {}"+ex.getMessage();            //2.JWT ปลอม (MalformedJwtException)
+        else if (ex instanceof UnsupportedJwtException) message = "JWT token is unsupported: {}"+ex.getMessage();   //3.JWT ไม่รองรับ (UnsupportedJwtException)
+        else if (ex instanceof IllegalArgumentException) message = "JWT claims string is empty: {}"+ex.getMessage(); //4.ไม่มีข้อมูล (IllegalArgumentException)
+        else if (ex instanceof SignatureException) message = "Invalid JWT signature: {}"+ex.getMessage();
         else message = "JWT error";
 
         return buildResponse(HttpStatus.UNAUTHORIZED, message);
