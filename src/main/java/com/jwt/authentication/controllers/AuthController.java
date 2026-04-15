@@ -1,5 +1,6 @@
 package com.jwt.authentication.controllers;
 
+import com.jwt.authentication.configuration.CookieConfig;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
 import com.jwt.authentication.payload.response.MessageResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
-    private final JwtTokenService jwtTokenService;
+    private final CookieConfig cookieConfig;
     private final AuthService authService;
 
     @PostMapping("/authen")
@@ -28,8 +29,8 @@ public class AuthController {
         JwtResponse jwtResponse = authService.login(loginRequest);
 
         // set cookie
-        ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(jwtResponse.getAccessToken());
-        ResponseCookie refreshCookie = jwtTokenService.generateRefreshJwtCookie(jwtResponse.getRefreshToken());
+        ResponseCookie jwtCookie = cookieConfig.generateJwtCookie(jwtResponse.getAccessToken());
+        ResponseCookie refreshCookie = cookieConfig.generateRefreshJwtCookie(jwtResponse.getRefreshToken());
 
 
         // response
@@ -48,8 +49,8 @@ public class AuthController {
             JwtResponse jwtResponse = authService.refreshToken(request);
 
             // set cookie
-            ResponseCookie jwtCookie = jwtTokenService.generateJwtCookie(jwtResponse.getAccessToken());
-            ResponseCookie refreshCookie = jwtTokenService.generateRefreshJwtCookie(jwtResponse.getRefreshToken());
+            ResponseCookie jwtCookie = cookieConfig.generateJwtCookie(jwtResponse.getAccessToken());
+            ResponseCookie refreshCookie = cookieConfig.generateRefreshJwtCookie(jwtResponse.getRefreshToken());
 
             // response
             return ResponseEntity.ok()
@@ -65,8 +66,8 @@ public class AuthController {
         //logout
         authService.logout(request);
         // remove cookie
-        ResponseCookie clearRefresh = jwtTokenService.getCleanJwtCookie();
-        ResponseCookie clearAccess = jwtTokenService.getCleanJwtRefreshCookie();
+        ResponseCookie clearRefresh = cookieConfig.getCleanJwtCookie();
+        ResponseCookie clearAccess = cookieConfig.getCleanJwtRefreshCookie();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())

@@ -1,5 +1,6 @@
 package com.jwt.authentication.advices;
 
+import com.jwt.authentication.configuration.CookieConfig;
 import com.jwt.authentication.payload.response.ErrorResponse;
 import com.jwt.authentication.services.JwtTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -22,6 +23,10 @@ import java.time.Instant;
 public class GlobalExceptionHandler {
     @Autowired
     JwtTokenService jwtTokenService;
+
+    @Autowired
+    CookieConfig cookieConfig;
+
     // จับ Exception ทั่วไป
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex) {
@@ -75,8 +80,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApiException(ApiException ex) {
         // token invalid → clear cookie
-        ResponseCookie clearAccess = jwtTokenService.getCleanJwtCookie();
-        ResponseCookie clearRefresh = jwtTokenService.getCleanJwtRefreshCookie();
+        ResponseCookie clearAccess = cookieConfig.getCleanJwtCookie();
+        ResponseCookie clearRefresh = cookieConfig.getCleanJwtRefreshCookie();
 
         return ResponseEntity.status(ex.getStatus())
                 .headers(headers -> {

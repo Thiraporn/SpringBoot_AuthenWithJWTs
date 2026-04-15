@@ -1,6 +1,7 @@
 package com.jwt.authentication.services;
 
 import com.jwt.authentication.advices.ApiException;
+import com.jwt.authentication.configuration.CookieConfig;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class AuthService {
 
     private final JwtTokenService jwtTokenService;
+    private final CookieConfig cookieConfig;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -67,7 +69,7 @@ public class AuthService {
 
     public JwtResponse refreshToken(HttpServletRequest request) {
         try {
-            String refreshToken = jwtTokenService.getJwtRefreshFromCookies(request);
+            String refreshToken = cookieConfig.getJwtRefreshFromCookies(request);
             if (refreshToken == null || refreshToken.isEmpty()) {
                 //return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EMPTY", "Refresh Token is empty!");
@@ -87,8 +89,8 @@ public class AuthService {
             String newRefreshToken = updatedUser.getRefreshToken();
 
             // 4. set cookie
-            ResponseCookie accessCookie = jwtTokenService.generateJwtCookie(newAccessToken);
-            ResponseCookie refreshCookie = jwtTokenService.generateRefreshJwtCookie(newRefreshToken);
+            ResponseCookie accessCookie = cookieConfig.generateJwtCookie(newAccessToken);
+            ResponseCookie refreshCookie = cookieConfig.generateRefreshJwtCookie(newRefreshToken);
 
             //5.roles
             List<String> roles = userDetails.getAuthorities().stream()
@@ -110,7 +112,7 @@ public class AuthService {
     public boolean logout(HttpServletRequest request) {
         try {
             //valid user
-            String refreshToken = jwtTokenService.getJwtRefreshFromCookies(request);
+            String refreshToken = cookieConfig.getJwtRefreshFromCookies(request);
             if (!StringUtils.hasText(refreshToken)) {
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EMPTY", "Nerver sign-in ");
             }
