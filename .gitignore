@@ -38,12 +38,14 @@ build/
 mvnw
 mvnw.cmd
 *.class
+.gitignore
 
 ### log ###
 logs/
-
+captures
 ### document ###
 documents/
+captures/
 
 # JWT Keys
 config/keys/*.pem
