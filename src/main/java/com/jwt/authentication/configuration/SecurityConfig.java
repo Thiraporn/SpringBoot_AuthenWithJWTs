@@ -1,8 +1,8 @@
 package com.jwt.authentication.configuration;
 
-import com.jwt.authentication.logger.LoggingFilter;
-import com.jwt.authentication.security.jwt.AuthEntryPointJwt;
-import com.jwt.authentication.security.jwt.AuthTokenFilter;
+import com.ana.common.security.libs.jsonwebtoken.AuthEntryPointJwt;
+import com.ana.common.security.libs.jsonwebtoken.AuthTokenFilter;
+import com.ana.common.security.libs.logger.LoggingFilter;
 import com.jwt.authentication.security.services.UserDetailsServiceImpl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

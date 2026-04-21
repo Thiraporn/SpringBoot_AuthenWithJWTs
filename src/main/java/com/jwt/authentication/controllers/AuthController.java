@@ -1,6 +1,6 @@
 package com.jwt.authentication.controllers;
 
-import com.jwt.authentication.configuration.CookieConfig;
+import com.ana.common.security.libs.jsonwebtoken.CookieConfig;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
 import com.jwt.authentication.payload.response.MessageResponse;
@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
-    private final CookieConfig cookieConfig;
+    @Autowired
+    private  CookieConfig cookieConfig;
+
     private final AuthService authService;
 
     @PostMapping("/authen")

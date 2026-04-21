@@ -1,6 +1,6 @@
 package com.jwt.authentication.security.services;
 
-import com.jwt.authentication.advices.ApiException;
+import com.ana.common.security.libs.advices.ApiException;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

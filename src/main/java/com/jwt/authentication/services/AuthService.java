@@ -1,7 +1,7 @@
 package com.jwt.authentication.services;
 
-import com.jwt.authentication.advices.ApiException;
-import com.jwt.authentication.configuration.CookieConfig;
+import com.ana.common.security.libs.advices.ApiException;
+import com.ana.common.security.libs.jsonwebtoken.CookieConfig;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
@@ -37,7 +37,7 @@ public class AuthService {
     private final UserDetailsServiceImpl userDetailsService;
 
     public JwtResponse login(LoginRequest loginRequest) {
-        try {
+//        try {
             //  1. authenticate
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUser(), loginRequest.getPwd()));
 
@@ -61,9 +61,9 @@ public class AuthService {
                     .username(userDetails.getUsername())
                     .roles(roles)
                     .build();
-        } catch (RuntimeException e) {
-            throw new ApiException(  HttpStatus.UNAUTHORIZED,  "LOGIN_IS_FAIL", "Fail during Login..." );
-        }
+//        } catch (RuntimeException e) {
+//            throw new ApiException(  HttpStatus.UNAUTHORIZED,  "LOGIN_IS_FAIL", "Fail during Login..." );
+//        }
 
     }
 

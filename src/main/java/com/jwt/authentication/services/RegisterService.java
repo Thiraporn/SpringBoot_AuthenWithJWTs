@@ -1,6 +1,6 @@
 package com.jwt.authentication.services;
 
-import com.jwt.authentication.advices.ApiException;
+import com.ana.common.security.libs.advices.ApiException;
 import com.jwt.authentication.models.ERole;
 import com.jwt.authentication.models.Role;
 import com.jwt.authentication.models.User;
