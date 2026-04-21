@@ -1,11 +1,11 @@
 package com.jwt.authentication.services;
 
 import com.ana.common.security.libs.advices.ApiException;
+import com.ana.common.security.libs.payload.MessageResponse;
 import com.jwt.authentication.models.ERole;
 import com.jwt.authentication.models.Role;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.request.SignupRequest;
-import com.jwt.authentication.payload.response.MessageResponse;
 import com.jwt.authentication.repository.RoleRepository;
 import com.jwt.authentication.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

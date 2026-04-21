@@ -1,7 +1,7 @@
 package com.jwt.authentication.controllers;
 
+import com.ana.common.security.libs.payload.MessageResponse;
 import com.jwt.authentication.payload.request.SignupRequest;
-import com.jwt.authentication.payload.response.MessageResponse;
 import com.jwt.authentication.services.RegisterService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

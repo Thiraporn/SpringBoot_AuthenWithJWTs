@@ -1,4 +1,4 @@
-package com.jwt.authentication.security.services;
+package com.jwt.authentication.services;
 
 import com.ana.common.security.libs.advices.ApiException;
 import com.jwt.authentication.models.User;

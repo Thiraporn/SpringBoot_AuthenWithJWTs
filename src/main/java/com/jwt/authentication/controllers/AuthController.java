@@ -1,10 +1,9 @@
 package com.jwt.authentication.controllers;
 
 import com.ana.common.security.libs.jsonwebtoken.CookieConfig;
+import com.ana.common.security.libs.payload.MessageResponse;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
-import com.jwt.authentication.payload.response.MessageResponse;
-import com.jwt.authentication.services.JwtTokenService;
 import com.jwt.authentication.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

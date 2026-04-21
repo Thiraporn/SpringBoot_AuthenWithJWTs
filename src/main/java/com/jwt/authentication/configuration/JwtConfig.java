@@ -1,5 +1,6 @@
-package com.jwt.authentication.security.jwt;
+package com.jwt.authentication.configuration;
 
+import com.ana.common.security.libs.jsonwebtoken.KeyUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

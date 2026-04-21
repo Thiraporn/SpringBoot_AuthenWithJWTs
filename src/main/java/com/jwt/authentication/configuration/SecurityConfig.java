@@ -3,7 +3,7 @@ package com.jwt.authentication.configuration;
 import com.ana.common.security.libs.jsonwebtoken.AuthEntryPointJwt;
 import com.ana.common.security.libs.jsonwebtoken.AuthTokenFilter;
 import com.ana.common.security.libs.logger.LoggingFilter;
-import com.jwt.authentication.security.services.UserDetailsServiceImpl;
+import com.jwt.authentication.services.UserDetailsServiceImpl;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

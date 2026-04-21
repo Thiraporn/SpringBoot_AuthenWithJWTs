@@ -7,8 +7,6 @@ import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
 import com.jwt.authentication.repository.RoleRepository;
 import com.jwt.authentication.repository.UserRepository;
-import com.jwt.authentication.security.services.UserDetailsImpl;
-import com.jwt.authentication.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
