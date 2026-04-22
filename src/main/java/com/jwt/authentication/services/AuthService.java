@@ -2,6 +2,7 @@ package com.jwt.authentication.services;
 
 import com.ana.common.security.libs.advices.ApiException;
 import com.ana.common.security.libs.jsonwebtoken.CookieConfig;
+import com.ana.common.security.libs.jsonwebtoken.JwtUtils;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.JwtResponse;
@@ -19,7 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,9 +36,8 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final UserDetailsServiceImpl userDetailsService;
-
+    private final JwtUtils jwtUtils;//tool ในการตรวจสอบว่า JWT ถูกต้องไหม
     public JwtResponse login(LoginRequest loginRequest) {
-//        try {
             //  1. authenticate
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUser(), loginRequest.getPwd()));
 
@@ -44,10 +46,17 @@ public class AuthService {
 
             //  2.Access Token
             String accessToken = jwtTokenService.generateAccessToken(userDetails);
-            // 3.Access Refresh Token from update Refresh Token (save DB)
-            User updatedUser = userDetailsService.createOrUpdateRefreshToken(jwtTokenService.generateRefreshToken(userDetails));
-            // 4. สร้าง cookie refreshToken
-            String refreshToken = updatedUser.getRefreshToken();
+            // 3.Access Refresh Token from add Refresh Token (save DB)
+            String refreshToken = jwtTokenService.generateRefreshToken(userDetails);
+            User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new ApiException(
+                    HttpStatus.NOT_FOUND,
+                    "USER_NOT_FOUND",
+                    "User Not Found with username: " + loginRequest.getUser()
+            ));
+            user.getRefreshTokens().add(refreshToken);
+            userRepository.save(user);
+
+
             //5.roles
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(item -> item.getAuthority())
@@ -59,36 +68,45 @@ public class AuthService {
                     .username(userDetails.getUsername())
                     .roles(roles)
                     .build();
-//        } catch (RuntimeException e) {
-//            throw new ApiException(  HttpStatus.UNAUTHORIZED,  "LOGIN_IS_FAIL", "Fail during Login..." );
-//        }
+
 
     }
 
     public JwtResponse refreshToken(HttpServletRequest request) {
-        try {
             String refreshToken = cookieConfig.getJwtRefreshFromCookies(request);
             if (refreshToken == null || refreshToken.isEmpty()) {
                 //return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
                 throw new ApiException(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EMPTY", "Refresh Token is empty!");
             }
-
+            if (!jwtUtils.validateJwtToken(refreshToken)) {
+                throw new ApiException(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN", "Invalid refresh token");
+            }
             // 1. verify token เก่า   ตรวจ + ได้ UserDetails กลับมา
-            User user = userDetailsService.verifyExpiration(refreshToken);
+            // REUSE DETECTION
+            Optional<User> user = userRepository.findByRefreshTokensContaining(refreshToken);
+            if (user.isEmpty()) {
+                String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
+                User hackedUser = userRepository.findByUsername(username)
+                        .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "USER_NOT_FOUND", "User not found"));
 
-
-            UserDetailsImpl userDetails = UserDetailsImpl.build(user);// สร้าง UserDetails
+                hackedUser.setRefreshTokens(new ArrayList<>()); // kill ทุก session
+                userRepository.save(hackedUser);
+                throw new ApiException(HttpStatus.FORBIDDEN, "TOKEN_REUSE", "Refresh token reuse detected");
+            }
+            User saveUser = user.get();
+            UserDetailsImpl userDetails = UserDetailsImpl.build(saveUser);// สร้าง UserDetails
 
             // 2. สร้าง access token ใหม่
             String newAccessToken = jwtTokenService.generateAccessToken(userDetails);
 
             //3. rotate refresh token
-            User updatedUser = userDetailsService.createOrUpdateRefreshToken(jwtTokenService.generateRefreshToken(userDetails));
-            String newRefreshToken = updatedUser.getRefreshToken();
+            String newRefreshToken = jwtTokenService.generateRefreshToken(userDetails);
 
-            // 4. set cookie
-            ResponseCookie accessCookie = cookieConfig.generateJwtCookie(newAccessToken);
-            ResponseCookie refreshCookie = cookieConfig.generateRefreshJwtCookie(newRefreshToken);
+            //4.rotation
+            saveUser.getRefreshTokens().remove(refreshToken);   //  ลบตัวเก่า
+            saveUser.getRefreshTokens().add(newRefreshToken);   //  ใส่ตัวใหม่
+            userRepository.save(saveUser);
+
 
             //5.roles
             List<String> roles = userDetails.getAuthorities().stream()
@@ -101,35 +119,32 @@ public class AuthService {
                     .username(userDetails.getUsername())
                     .roles(roles)
                     .build();
-        } catch (ApiException e) {
-            throw e; // ส่งต่อของเดิม
-        } catch (RuntimeException e) {
-            throw new ApiException(  HttpStatus.UNAUTHORIZED,  "REFRESH_TOKEN_INVALID", "Refresh Token is empty!" );
-        }
+
     }
     public boolean logout(HttpServletRequest request) {
-        try {
-            //valid user
-            String refreshToken = cookieConfig.getJwtRefreshFromCookies(request);
-            if (!StringUtils.hasText(refreshToken)) {
-                throw new ApiException(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EMPTY", "Nerver sign-in ");
-            }
-
-            User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new ApiException(  HttpStatus.BAD_REQUEST,  "TOKEN_NOT_FOUND", "Token not found" ));
-
-            // remove token
-            user.setRefreshToken(null);
-            user.setRefreshTokenExpiry(null);
-
-            userRepository.save(user);
-
-        } catch (ApiException e) {
-                throw e; // ส่งต่อของเดิม
-        } catch (RuntimeException e) {
-            throw new ApiException(  HttpStatus.UNAUTHORIZED,  "LOGOUT_IS_FAIL", "Fail during Logout..." );
+        //valid user
+        String refreshToken = cookieConfig.getJwtRefreshFromCookies(request);
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "REFRESH_TOKEN_EMPTY", "Nerver sign-in ");
         }
+        User user = userRepository.findByRefreshTokensContaining(refreshToken)
+                .orElseThrow(() -> new ApiException(
+                        HttpStatus.BAD_REQUEST,
+                        "TOKEN_NOT_FOUND",
+                        "Token not found"
+                ));
+
+        // ลบ refresh token ออกจาก list
+        user.setRefreshTokens(
+                user.getRefreshTokens()
+                        .stream()
+                        .filter(t -> !t.equals(refreshToken))
+                        .toList()
+        );
+        userRepository.save(user);
 
         return true;
     }
+
 
 }

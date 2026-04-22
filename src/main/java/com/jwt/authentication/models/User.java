@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -26,12 +29,16 @@ public class User {
     @Size(max = 120)
     private String password;
 
-    private String refreshToken;
-    private Long refreshTokenExpiry;
+    //private String refreshToken;
+    //private Long refreshTokenExpiry;
+
+    @Builder.Default
+    private List<String> refreshTokens = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        //this.refreshTokens = new ArrayList<>();
     }
 
     //@DBRef

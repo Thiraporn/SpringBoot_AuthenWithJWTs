@@ -3,6 +3,7 @@ package com.jwt.authentication.controllers;
 import com.ana.common.security.libs.jsonwebtoken.CookieConfig;
 import com.ana.common.security.libs.payload.MessageResponse;
 import com.jwt.authentication.payload.request.LoginRequest;
+import com.jwt.authentication.payload.response.TokenResponse;
 import com.jwt.authentication.payload.response.JwtResponse;
 import com.jwt.authentication.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,26 +42,24 @@ public class AuthController {
                     headers.add(HttpHeaders.SET_COOKIE, jwtCookie.toString());//ใส่ cookie
                     headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());//ใส่ cookie
                 })
-                .body(new MessageResponse("Authentication Success"));
-                 //.body(jwtResponse);
+                .body(new TokenResponse(jwtResponse.getAccessToken(),jwtResponse.getRoles(),"Authentication Success"));
     }
 
-    @GetMapping( "/refreshtoken")
+    @GetMapping( "/refreshToken")
     public ResponseEntity<?> refreshtoken(HttpServletRequest request) {
             //refresh
             JwtResponse jwtResponse = authService.refreshToken(request);
 
             // set cookie
-            ResponseCookie jwtCookie = cookieConfig.generateJwtCookie(jwtResponse.getAccessToken());
             ResponseCookie refreshCookie = cookieConfig.generateRefreshJwtCookie(jwtResponse.getRefreshToken());
+
 
             // response
             return ResponseEntity.ok()
                     .headers(headers -> {
-                        headers.add(HttpHeaders.SET_COOKIE, jwtCookie.toString());//ใส่ cookie
                         headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());//ใส่ cookie
-                    }).body(new MessageResponse("Refresh token Success"));
-                    //.body(jwtResponse);
+                    })
+                    .body(new TokenResponse(jwtResponse.getAccessToken(),jwtResponse.getRoles(),"Refresh token Success"));
 
     }
     @RequestMapping(value = "/sign-out", method = {RequestMethod.GET, RequestMethod.POST})
