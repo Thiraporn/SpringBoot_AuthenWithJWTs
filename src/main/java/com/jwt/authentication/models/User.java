@@ -46,5 +46,10 @@ public class User {
     //private Set<Role> roles = new HashSet<>();
     private Map<ERole, String>  roles;
 
+    private String organization;
+    private String nameTH;
+    private EStatus status = EStatus.UNDEFINED;
+
+
 
 }

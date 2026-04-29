@@ -39,13 +39,13 @@ public class AuthController {
         // response
         return ResponseEntity.ok()
                 .headers(headers -> {
-                    headers.add(HttpHeaders.SET_COOKIE, jwtCookie.toString());//ใส่ cookie
+                    //headers.add(HttpHeaders.SET_COOKIE, jwtCookie.toString());//ใส่ cookie
                     headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());//ใส่ cookie
                 })
                 .body(new TokenResponse(jwtResponse.getAccessToken(),jwtResponse.getRoles(),"Authentication Success"));
     }
 
-    @GetMapping( "/refreshToken")
+    @PostMapping( "/refreshToken")
     public ResponseEntity<?> refreshtoken(HttpServletRequest request) {
             //refresh
             JwtResponse jwtResponse = authService.refreshToken(request);
