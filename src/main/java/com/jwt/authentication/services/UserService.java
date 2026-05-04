@@ -44,8 +44,15 @@ public class UserService {
 
         Map<ERole, String> userRoles = new HashMap<>();
 
-        for (ERole role : inputRoles) {
-            userRoles.put(role, roleMap.get(role));
+        if (inputRoles.isEmpty()) {
+            userRoles.put(ERole.USER, roleMap.get(ERole.USER));
+        } else {
+            for (ERole role : inputRoles) {
+                String code = roleMap.get(role);
+                if (code != null) {
+                    userRoles.put(role, code);
+                }
+            }
         }
 
         user.setRoles(userRoles);
