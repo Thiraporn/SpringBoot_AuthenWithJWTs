@@ -150,6 +150,7 @@ public class PermissionService {
         res.setUrl(menu.getUrl());
         res.setIcon(menu.getIcon());
         res.setColor(menu.getColor());
+        res.setGroupCode(menu.getGroupCode());
         return res;
     }
 

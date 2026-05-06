@@ -17,6 +17,7 @@ public class MenuResponse {
     private String url;
     private String icon;
     private String color;
+    private String groupCode;
     @Builder.Default
     private List<MenuResponse> children = new ArrayList<>();
 }
