@@ -18,5 +18,8 @@ public class Menu {
     private String menuParent;
     private String info;
     private String url;
+    private String icon;
+    private String color;
+    private String groupCode;
     private EStatus status = EStatus.UNDEFINED;
 }

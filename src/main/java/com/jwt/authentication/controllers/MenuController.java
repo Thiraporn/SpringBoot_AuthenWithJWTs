@@ -6,10 +6,7 @@ import com.jwt.authentication.services.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,6 +33,16 @@ public class MenuController {
     public ResponseEntity<?> saveMenu(HttpServletRequest request) {
         List<Menu> orders = menuService.getAllMenus();
         return ResponseEntity.ok(orders.size());
+    }
+    @GetMapping("/autocomplete/search")
+    public ResponseEntity<List<Menu>> searchAutocompleteParentMenus( @RequestParam String q  ) {
+        List<Menu> result = menuService.searchAutocompleteParentMenus(q);
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping("/datatable/{code}/submenus")
+    public ResponseEntity<List<Menu>> getDatableSubMenusByParentCode(@PathVariable String code) {
+        List<Menu> result =  menuService.getDatableSubMenusByParentCode(code);
+        return ResponseEntity.ok(result);
     }
 
 
