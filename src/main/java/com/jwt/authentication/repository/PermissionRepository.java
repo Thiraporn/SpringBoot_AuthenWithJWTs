@@ -11,6 +11,8 @@ import java.util.List;
 public interface PermissionRepository extends MongoRepository<Permission, String> {
     @Query("{ 'roleCode': { $in: ?0 }, 'enabled': true }")
     List<Permission> findActivePermissionsByRoles(List<String> roles);
+    List<Permission> findByRoleCodeInAndEnabledTrue(List<String> roleCodes);
+
 
 
 

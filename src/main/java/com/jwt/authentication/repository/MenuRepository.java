@@ -28,4 +28,6 @@ public interface MenuRepository extends MongoRepository<Menu, String> {
     @Query(value = "{ 'menuParent': ?0 }", sort = "{ 'code': 1 }")
     List<Menu> getDatableSubMenusByParentCode(String menuParent);
 
+    List<Menu> findAllByCodeIn(List<String> menuCodes);
+
 }

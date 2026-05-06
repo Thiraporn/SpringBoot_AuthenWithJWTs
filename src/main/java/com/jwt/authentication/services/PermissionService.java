@@ -4,6 +4,7 @@ import com.jwt.authentication.models.Permission;
 import com.jwt.authentication.models.Role;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.response.MenuResponse;
+import com.jwt.authentication.repository.MenuRepository;
 import com.jwt.authentication.repository.PermissionRepository;
 import com.jwt.authentication.repository.RoleRepository;
 import com.jwt.authentication.repository.UserRepository;
@@ -29,6 +30,8 @@ public class PermissionService {
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private MenuRepository menuRepository;
 
     private final MongoTemplate mongoTemplate;
 
@@ -88,7 +91,8 @@ public class PermissionService {
 //
 //        return permissionRepository.findMenusByRoles(roleCodes);
 //    }
-    public List<MenuResponse> getMenusByUserAuthorized(Authentication auth) {
+    //Menu Group MANAGEMENT
+    public List<MenuResponse> getManagementMenusByUserAuthorized(Authentication auth) {
 
         // 1. get user
         User user = userRepository.findByUsername(auth.getName())
@@ -130,13 +134,15 @@ public class PermissionService {
 
             MenuResponse node = map.get(menu.getCode());
 
-            if (menu.getMenuParent() == null || menu.getMenuParent().equals("00")) {
+            if (menu.getMenuParent() == null || "00".equals(menu.getMenuParent())) {
                 roots.add(node);
             } else {
                 MenuResponse parent = map.get(menu.getMenuParent());
 
                 if (parent != null) {
                     parent.getChildren().add(node);
+                } else {
+                    roots.add(node); // fallback safety
                 }
             }
         }
@@ -152,6 +158,45 @@ public class PermissionService {
         res.setColor(menu.getColor());
         res.setGroupCode(menu.getGroupCode());
         return res;
+    }
+    //Menu ALL Group
+    public List<MenuResponse> getAllMenusByUserAuthorized(Authentication auth) {
+         // 1. get user
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // 2. extract roles
+        List<String> roleCodes = new ArrayList<>(user.getRoles().values());
+        // 3. validate roles exist in DB
+        List<String> validRoles = roleRepository.findAllByCodeIn(roleCodes)
+                .stream()
+                .map(Role::getCode)
+                .toList();
+
+        if (validRoles.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 1. get permissions (แทน $lookup)
+        List<Permission> permissions =
+                permissionRepository.findByRoleCodeInAndEnabledTrue(validRoles);
+
+        // 2. extract menu codes
+        List<String> menuCodes = permissions.stream()
+                .map(Permission::getMenuCode)
+                .distinct()
+                .toList();
+
+        // 3. get menus (แทน join menus)
+        List<Menu> menus = menuRepository.findAllByCodeIn(menuCodes);
+
+        // 4. get menus from permission filter business rules (แทน $match)
+        List<Menu> filtered = menus.stream()
+                .filter(m -> "ACTIVE".equals(m.getStatus()))
+                //.filter(m -> "MANAGEMENT".equals(m.getGroupCode()))
+                .toList();
+
+        // 5. build tree
+        return buildMenuTree(filtered);
     }
 
 

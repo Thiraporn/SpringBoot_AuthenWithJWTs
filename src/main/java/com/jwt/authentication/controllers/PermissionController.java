@@ -40,10 +40,16 @@ public class PermissionController {
 //                .distinct()
 //                .toList();
 //    }
+    @GetMapping("/get-permissions-management")
+    public ResponseEntity<List<MenuResponse>> getManagementMenusByUserAuthorized(Authentication auth) {
+        List<MenuResponse> menuResponse  = permissionService.getManagementMenusByUserAuthorized(auth);
+        System.out.println("getManagementMenusByUserAuthorized >>> "+menuResponse.toString());
+        return ResponseEntity.ok(menuResponse);
+    }
     @GetMapping("/get-permissions")
-    public ResponseEntity<List<MenuResponse>> getMenusByUserAuthorized(Authentication auth) {
-        List<MenuResponse> menuResponse  = permissionService.getMenusByUserAuthorized(auth);
-        System.out.println("getMenusByUserAuthorized>>> "+menuResponse.toString());
+    public ResponseEntity<List<MenuResponse>> getAllMenusByUserAuthorized(Authentication auth) {
+        List<MenuResponse> menuResponse  = permissionService.getAllMenusByUserAuthorized(auth);
+        System.out.println("getAllMenusByUserAuthorized >>> "+menuResponse.toString());
         return ResponseEntity.ok(menuResponse);
     }
 
