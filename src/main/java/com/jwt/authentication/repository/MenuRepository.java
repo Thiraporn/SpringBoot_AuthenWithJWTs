@@ -29,5 +29,6 @@ public interface MenuRepository extends MongoRepository<Menu, String> {
     List<Menu> getDatableSubMenusByParentCode(String menuParent);
 
     List<Menu> findAllByCodeIn(List<String> menuCodes);
+    List<Menu> findByCodeInAndStatus( List<String> codes, String status);
 
 }

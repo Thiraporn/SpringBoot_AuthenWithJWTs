@@ -4,7 +4,7 @@ import com.ana.common.security.libs.jsonwebtoken.CookieConfig;
 import com.ana.common.security.libs.payload.MessageResponse;
 import com.jwt.authentication.payload.request.LoginRequest;
 import com.jwt.authentication.payload.response.TokenResponse;
-import com.jwt.authentication.payload.response.JwtResponse;
+import com.jwt.authentication.payload.response.JwtResponse; 
 import com.jwt.authentication.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -97,8 +97,23 @@ public class AuthController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("username", username);
-        response.put("roles", roles);
+        //response.put("roles", roles);
+        //return ResponseEntity.ok(new UserResponse(username,roles));
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/permissions/me")
+    public ResponseEntity<?> getCurrentRoles(Authentication authentication) {
+        String username = authentication.getName();
 
+        Collection<? extends GrantedAuthority> authorities =
+                authentication.getAuthorities();
+
+        List<String> roles = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("roles", roles);
         return ResponseEntity.ok(response);
     }
 

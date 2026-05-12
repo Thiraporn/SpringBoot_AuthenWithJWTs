@@ -1,8 +1,5 @@
 package com.jwt.authentication.services;
-import com.jwt.authentication.models.Menu;
-import com.jwt.authentication.models.Permission;
-import com.jwt.authentication.models.Role;
-import com.jwt.authentication.models.User;
+import com.jwt.authentication.models.*;
 import com.jwt.authentication.payload.response.MenuResponse;
 import com.jwt.authentication.repository.MenuRepository;
 import com.jwt.authentication.repository.PermissionRepository;
@@ -117,39 +114,34 @@ public class PermissionService {
         List<Menu> menus = roleRepository.findMenusByRoles(validRoles);
 
         // 5. build tree (optional but recommended)
-        return buildMenuTree(menus);
+        return buildMenuTree(menus,null);
     }
-
-    private List<MenuResponse> buildMenuTree(List<Menu> menus) {
-
-        Map<String, MenuResponse> map = menus.stream()
-                .collect(Collectors.toMap(
-                        Menu::getCode,
-                        this::toResponse
-                ));
+    private List<MenuResponse> buildMenuTree( List<Menu> menus,   Map<String, List<String>> permissionMap) {
+        Map<String, List<String>> safePermissionMap =  permissionMap != null ? permissionMap : Collections.emptyMap();
+        Map<String, MenuResponse> map =  menus.stream() .collect(Collectors.toMap(
+                                Menu::getCode,
+                                m -> toResponse(m, safePermissionMap)
+                        ));
 
         List<MenuResponse> roots = new ArrayList<>();
-
         for (Menu menu : menus) {
-
             MenuResponse node = map.get(menu.getCode());
-
             if (menu.getMenuParent() == null || "00".equals(menu.getMenuParent())) {
                 roots.add(node);
             } else {
-                MenuResponse parent = map.get(menu.getMenuParent());
-
+                MenuResponse parent =  map.get(menu.getMenuParent());
                 if (parent != null) {
                     parent.getChildren().add(node);
                 } else {
-                    roots.add(node); // fallback safety
+                    roots.add(node);
                 }
             }
         }
 
         return roots;
     }
-    private MenuResponse toResponse(Menu menu) {
+
+    private MenuResponse toResponse(Menu menu,   Map<String, List<String>> permissionMap) {
         MenuResponse res = new MenuResponse();
         res.setCode(menu.getCode());
         res.setNameEN(menu.getNameEN());
@@ -157,6 +149,8 @@ public class PermissionService {
         res.setIcon(menu.getIcon());
         res.setColor(menu.getColor());
         res.setGroupCode(menu.getGroupCode());
+        res.setDescription(menu.getNameEN());
+        res.setRequiredPermissions(  permissionMap.getOrDefault(  menu.getCode(),  new ArrayList<>()  ) );
         return res;
     }
     //Menu ALL Group
@@ -167,38 +161,94 @@ public class PermissionService {
         // 2. extract roles
         List<String> roleCodes = new ArrayList<>(user.getRoles().values());
         // 3. validate roles exist in DB
-        List<String> validRoles = roleRepository.findAllByCodeIn(roleCodes)
-                .stream()
-                .map(Role::getCode)
-                .toList();
+        // 3. get roles as map (replace validRoles)
+        Map<String, ERole> roleMap =
+                roleRepository.findAllByCodeIn(roleCodes)
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Role::getCode,
+                                Role::getName
+                        ));
 
-        if (validRoles.isEmpty()) {
+        // 4. empty check (replace validRoles.isEmpty())
+        if (roleMap.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 1. get permissions (แทน $lookup)
-        List<Permission> permissions =
-                permissionRepository.findByRoleCodeInAndEnabledTrue(validRoles);
+        Set<String> validRoleCodes = roleMap.keySet();
 
-        // 2. extract menu codes
+        // 5. get permissions (แทน $lookup)
+        List<Permission> permissions =
+                permissionRepository.findByRoleCodeInAndEnabledTrue(validRoleCodes);
+
+        // 6. group permission by menuCode  map (menuCode → roles)
+        Map<String, List<String>> permissionMap =
+                permissions.stream()
+                        .collect(Collectors.groupingBy(
+                                Permission::getMenuCode,
+                                Collectors.mapping(
+                                        p -> {
+                                            ERole role = roleMap.get(p.getRoleCode());
+                                            return role != null ? role.name() : null;
+                                        },
+                                        Collectors.toList()
+                                )
+                        ));
+
+        // 7. extract menu codes
         List<String> menuCodes = permissions.stream()
                 .map(Permission::getMenuCode)
                 .distinct()
                 .toList();
 
-        // 3. get menus (แทน join menus)
+        // 8. fetch menus (แทน join menus) and sort menus
         List<Menu> menus = menuRepository.findAllByCodeIn(menuCodes);
 
-        // 4. get menus from permission filter business rules (แทน $match)
+        // 9. filter business rules : get menus from permission filter business rules (แทน $match)
         List<Menu> filtered = menus.stream()
-                .filter(m -> "ACTIVE".equals(m.getStatus()))
-                //.filter(m -> "MANAGEMENT".equals(m.getGroupCode()))
+                .filter(m ->  EStatus.ACTIVE.equals(m.getStatus()))
+                .filter(m -> !Objects.equals(m.getGroupCode(), "HOME"))
+                .sorted( Comparator.comparing( Menu::getCode ) )
                 .toList();
+        // 10.Empty
+        if (filtered.isEmpty()) {
+           return Collections.emptyList();
+        }
 
-        // 5. build tree
-        return buildMenuTree(filtered);
+
+
+        // 11.  build tree (with permission)
+         return buildMenuTree(filtered, permissionMap);
+
     }
 
 
 
+
 }
+//// 4. find permissions
+//List<Permission> permissions = permissionRepository.findByRoleCodeInAndEnabledTrue(validRoles);
+//        if (permissions.isEmpty()) {
+//        return Collections.emptyList();
+//        }
+//// 5. extract menu codes
+//List<String> menuCodes =
+//        permissions.stream()
+//                .map(Permission::getMenuCode)
+//                .distinct()
+//                .toList();
+//        System.out.println( "menuCodes >>> " + menuCodes );
+//
+//// 6. find menus
+//List<Menu> menus = menuRepository.findByCodeInAndStatus(  menuCodes, "ACTIVE"  );
+//
+//        if (menus.isEmpty()) {
+//        return Collections.emptyList();
+//        }
+//                // 7. sort menus
+//                menus.sort(
+//        Comparator.comparing(Menu::getCode)
+//        );
+//
+//                // 8. build tree (optional but recommended)
+//                return buildMenuTree(menus);

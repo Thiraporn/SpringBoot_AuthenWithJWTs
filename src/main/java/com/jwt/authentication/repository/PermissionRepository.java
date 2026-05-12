@@ -7,11 +7,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface PermissionRepository extends MongoRepository<Permission, String> {
     @Query("{ 'roleCode': { $in: ?0 }, 'enabled': true }")
     List<Permission> findActivePermissionsByRoles(List<String> roles);
-    List<Permission> findByRoleCodeInAndEnabledTrue(List<String> roleCodes);
+    List<Permission> findByRoleCodeInAndEnabledTrue(Set<String> roleCodes);
 
 
 

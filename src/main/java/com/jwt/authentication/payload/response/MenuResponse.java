@@ -18,6 +18,8 @@ public class MenuResponse {
     private String icon;
     private String color;
     private String groupCode;
+    private String description;
+    private List<String> requiredPermissions;
     @Builder.Default
     private List<MenuResponse> children = new ArrayList<>();
 }
