@@ -2,6 +2,7 @@ package com.jwt.authentication.controllers;
 
 
 import com.jwt.authentication.models.Menu;
+import com.jwt.authentication.payload.response.MenuResponse;
 import com.jwt.authentication.services.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +21,26 @@ public class MenuController {
 
     @PostMapping("/menus-all")
     public ResponseEntity<?> getMenusList(HttpServletRequest request) {
-        List<Menu> orders = menuService.getAllMenus();
-        return ResponseEntity.ok(orders);
+        //List<Menu> orders = menuService.getAllMenus();
+        List<MenuResponse> menuTree = menuService.getAllMenusTree();
+        return ResponseEntity.ok(menuTree);
     }
-
     @PostMapping("/save")
-    public ResponseEntity<?> saveMenu(@RequestBody Menu menu) {
+    public ResponseEntity<?> saveMenuParent(@RequestBody Menu menu) {
         return ResponseEntity.ok(menuService.doSaveMenu(menu));
     }
-
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> editMenuParent(@RequestBody Menu menu) {
+        return ResponseEntity.ok(menuService.doEditMenu(menu));
+    }
+    @PostMapping("/submenu-save")
+    public ResponseEntity<?> saveMenuChild(@RequestBody Menu menu) {
+        return ResponseEntity.ok(menuService.doSaveSubMenu(menu));
+    }
+    @PutMapping("/submenu-edit/{id}")
+    public ResponseEntity<?> editMenuChild(@RequestBody Menu menu) {
+        return ResponseEntity.ok(menuService.doEditMenu(menu));
+    }
     @PostMapping("/count")
     public ResponseEntity<?> saveMenu(HttpServletRequest request) {
         List<Menu> orders = menuService.getAllMenus();

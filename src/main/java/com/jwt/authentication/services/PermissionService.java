@@ -75,19 +75,6 @@ public class PermissionService {
         log.info("Total Permission By  Current Authorized: {}", permissions.size());
         return permissions;
     }
-//    public List<Menu> getMenusAuthorized(Authentication auth) {
-//
-//        User user = userRepository.findByUsername(auth.getName())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        List<String> roleCodes = user.getRoles()
-//                .keySet()
-//                .stream()
-//                .map(Enum::name)
-//                .toList();
-//
-//        return permissionRepository.findMenusByRoles(roleCodes);
-//    }
     //Menu Group MANAGEMENT
     public List<MenuResponse> getManagementMenusByUserAuthorized(Authentication auth) {
 
@@ -116,7 +103,7 @@ public class PermissionService {
         // 5. build tree (optional but recommended)
         return buildMenuTree(menus,null);
     }
-    private List<MenuResponse> buildMenuTree( List<Menu> menus,   Map<String, List<String>> permissionMap) {
+    public List<MenuResponse> buildMenuTree( List<Menu> menus,   Map<String, List<String>> permissionMap) {
         Map<String, List<String>> safePermissionMap =  permissionMap != null ? permissionMap : Collections.emptyMap();
         Map<String, MenuResponse> map =  menus.stream() .collect(Collectors.toMap(
                                 Menu::getCode,
