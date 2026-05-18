@@ -9,4 +9,3 @@ documents/
 captures/
 
 # JWT Keys
-config/keys/*.pem
