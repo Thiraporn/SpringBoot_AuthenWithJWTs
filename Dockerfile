@@ -9,8 +9,10 @@ RUN apt-get update && apt-get install -y maven
 RUN mkdir -p /root/.m2
 RUN cp .m2/settings.xml /root/.m2/settings.xml
 
-RUN mvn -X clean package -DskipTests
+RUN mvn --settings /root/.m2/settings.xml clean package -DskipTests
 
 EXPOSE 8080
+
+RUN echo $GITHUB_USERNAME
 
 CMD ["java","-jar","target/authentication-0.0.1-SNAPSHOT.jar"]
