@@ -13,6 +13,7 @@ RUN mvn --settings /root/.m2/settings.xml clean package -DskipTests
 
 EXPOSE 8080
 
-RUN echo $GITHUB_USERNAME
+RUN echo "AUTHEN_COMMONLIBS>>" $GITHUB_USERNAME
+RUN test -n "$GITHUB_TOKEN" && echo "TOKEN_EXISTS"
 
 CMD ["java","-jar","target/authentication-0.0.1-SNAPSHOT.jar"]
