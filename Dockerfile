@@ -1,12 +1,12 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
 COPY . .
 
-RUN chmod +x mvnw
+RUN apt-get update && apt-get install -y maven
 
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 EXPOSE 8080
 
