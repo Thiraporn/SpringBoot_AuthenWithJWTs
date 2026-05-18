@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y maven
 RUN mkdir -p /root/.m2
 RUN cp .m2/settings.xml /root/.m2/settings.xml
 
-RUN mvn clean package -DskipTests
+RUN mvn -X clean package -DskipTests
 
 EXPOSE 8080
 
