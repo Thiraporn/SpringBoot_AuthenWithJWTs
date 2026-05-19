@@ -49,6 +49,7 @@ public class User {
     private String organization;
     private String nameTH;
     private EStatus status = EStatus.UNDEFINED;
+    private String info;
 
 
 
