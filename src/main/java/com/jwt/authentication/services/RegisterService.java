@@ -42,6 +42,8 @@ public class RegisterService {
 
         //save user
         user.setRoles(roles);
+        //encrypt the password
+        user.setPassword(encoder.encode(signUpRequest.getPwd()));
         userRepository.save(user);
 
         return MessageResponse.builder()
