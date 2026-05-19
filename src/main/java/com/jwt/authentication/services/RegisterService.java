@@ -28,10 +28,6 @@ public class RegisterService {
             throw new ApiException(  HttpStatus.BAD_REQUEST,  "REGISTER_IS_FAIL", "Error: Username is already taken!" );
         }
 
-        if (userRepository.existsByUsername(signUpRequest.getUser())) {
-            throw new ApiException(  HttpStatus.BAD_REQUEST,  "REGISTER_IS_FAIL", "Error: Email is already in use!" );
-        }
-
         // Create new user's account
         User user = new User(signUpRequest.getUser(),encoder.encode(signUpRequest.getPwd()));
 
@@ -43,7 +39,7 @@ public class RegisterService {
         //save user
         user.setRoles(roles);
         //encrypt the password
-        user.setPassword(encoder.encode(signUpRequest.getPwd()));
+        //user.setPassword(encoder.encode(signUpRequest.getPwd()));
         userRepository.save(user);
 
         return MessageResponse.builder()
