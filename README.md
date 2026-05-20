@@ -21,9 +21,53 @@ This project integrates a shared library to centralize reusable components and e
 👉 
 <a href="https://github.com/Thiraporn/common-libs"> Common Libs</a>
 
+## 🛠 Tech Stack
+- Java 17
+- Spring Boot 3
+- Spring Security + JWT (RS256)
+- MongoDB
+- JUnit 5 + Mockito
+- Maven
+- Render (Deployment)
+- REST API
+- Integration Testing
+- Git/GitHub
 
+## 🧩  Features
 
-## 🚀 Integration History 
+- JWT Authentication (Access Token + Refresh Token)
+- RS256 JWT Signing
+- Role-Based Authorization (RBAC)
+- Secure HTTP-Only Cookie
+- Token Refresh Endpoint
+- Protected REST APIs
+- **Multi-service architecture preparation**
+  
+
+## 🧪 Testing
+
+- Unit Testing with JUnit5 & Mockito
+- Integration Testing with SpringBootTest
+- JWT Authentication Flow Testing
+
+## 🚧 Ongoing Improvements
+
+- Swagger/OpenAPI documentation
+- Docker containerization
+- CI/CD with GitHub Actions
+- Service-to-service communication architecture
+- Integration with
+  <a href="https://github.com/Thiraporn/olist-service" target="_blank">
+  olist-service
+  </a>
+  to support analytics workflows and data processing based on the
+  <a href="https://github.com/Thiraporn/olist_e_commerce" target="_blank">
+  Olist e-commerce analytics project
+  </a>
+
+[//]: # (- Jacoco test coverage)
+
+## 🌐 Related Projects
  
 - Integrated and migrated authentication system to Spring Boot Security with JWT:   
   <img src="https://img.shields.io/badge/Current-Now Focus-success?style=flat-square"/>
