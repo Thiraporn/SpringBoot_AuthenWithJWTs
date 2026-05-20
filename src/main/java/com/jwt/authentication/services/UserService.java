@@ -122,7 +122,7 @@ public class UserService {
         } else {
             for (Map.Entry<ERole, String> entry : inputRoles.entrySet()) {
                 ERole role = entry.getKey();
-                String code = entry.getValue();
+                String code =  roleMap.get(entry.getKey());
                 if (code == null) {
                     throw new ApiException( HttpStatus.BAD_REQUEST, "INVALID_ROLE", "Invalid role: " + role );
                 }
