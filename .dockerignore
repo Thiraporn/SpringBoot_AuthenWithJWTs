@@ -1,0 +1,11 @@
+target
+.git
+.idea
+.vscode
+.env
+captures
+### document ###
+documents/
+captures/
+
+# JWT Keys
