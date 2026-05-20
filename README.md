@@ -21,20 +21,10 @@ This project integrates a shared library to centralize reusable components and e
 👉 
 <a href="https://github.com/Thiraporn/common-libs"> Common Libs</a>
 
----
+
 
 ## 🚀 Integration History 
-
-- Initial backend implementation using Express.js JWT Authentication:  
-  <img src="https://img.shields.io/badge/Current-Refactoring-orange?style=flat-square"/>
-  <img src="https://skillicons.dev/icons?i=nodejs,expressjs,mongodb" height="20"/>  
-  <a href="https://github.com/Thiraporn/expressjs_authenjwtswithmongodb" target="_blank">
-  Express.js Backend Repository
-  </a>|<a href="https://expressjs-authenjwtswithmongodb.onrender.com" target="_blank">
-  API Health Check
-  </a>
-  <br/>  
-  <br/>  
+ 
 - Integrated and migrated authentication system to Spring Boot Security with JWT:   
   <img src="https://img.shields.io/badge/Current-Now Focus-success?style=flat-square"/>
   <img src="https://skillicons.dev/icons?i=java,spring,mongodb" height="20"/>  
