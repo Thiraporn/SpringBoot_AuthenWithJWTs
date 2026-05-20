@@ -27,22 +27,36 @@ This project integrates a shared library to centralize reusable components and e
 - Spring Security + JWT (RS256)
 - MongoDB
 - JUnit 5 + Mockito
-- Maven
-- Render (Deployment)
+- Maven 
 - REST API
 - Integration Testing
 - Git/GitHub
+- Postman
+- Render (Free-tier Deployment)
 
 ## 🧩  Features
+### 🔐 Authentication & Security
+ - JWT Authentication (Access Token + Refresh Token)
+ - RS256 JWT Signing
+ - Secure HTTP-Only Cookie
+ - Token Refresh Mechanism
 
-- JWT Authentication (Access Token + Refresh Token)
-- RS256 JWT Signing
-- Role-Based Authorization (RBAC)
-- Secure HTTP-Only Cookie
-- Token Refresh Endpoint
+### 🛡 Authorization
+- Role-Based Access Control (RBAC)
 - Protected REST APIs
-- **Multi-service architecture preparation**
-  
+- Permission-based access control
+
+### 👤 User Management
+- Users Management (CRUD operations)
+- Role assignment per user
+
+### 📁 System Modules
+- Menu Management
+- Permission Management
+
+### 🔄 Architecture Readiness
+- Designed for microservice integration
+- Prepared for service-to-service communication 
 
 ## 🧪 Testing
 
@@ -64,6 +78,7 @@ This project integrates a shared library to centralize reusable components and e
   <a href="https://github.com/Thiraporn/olist_e_commerce" target="_blank">
   Olist e-commerce analytics project
   </a>
+- Software Development Documentation
 
 [//]: # (- Jacoco test coverage)
 
@@ -73,7 +88,7 @@ This project integrates a shared library to centralize reusable components and e
   <img src="https://img.shields.io/badge/Current-Now Focus-success?style=flat-square"/>
   <img src="https://skillicons.dev/icons?i=java,spring,mongodb" height="20"/>  
   <a href="https://github.com/Thiraporn/SpringBoot_AuthenWithJWTs" target="_blank">
-    Spring Boot Backend Repository
+    This Repository
   </a>|<a href="https://springboot-authenjwtswithmongodb.onrender.com" target="_blank">
     API Health Check
   </a> 
