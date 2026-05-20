@@ -25,7 +25,7 @@ This project integrates a shared library to centralize reusable components and e
 
 ## 🚀 Integration History 
 
-- Initial backend implementation using Express.js JWT Authentication:
+- Initial backend implementation using Express.js JWT Authentication:  
   <img src="https://img.shields.io/badge/Current-Refactoring-orange?style=flat-square"/>
   <img src="https://skillicons.dev/icons?i=nodejs,expressjs,mongodb" height="20"/>  
   <a href="https://github.com/Thiraporn/expressjs_authenjwtswithmongodb" target="_blank">
