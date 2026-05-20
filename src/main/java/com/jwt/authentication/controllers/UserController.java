@@ -1,6 +1,7 @@
 package com.jwt.authentication.controllers;
 
 import com.ana.common.security.libs.payload.MessageResponse;
+import com.jwt.authentication.models.Menu;
 import com.jwt.authentication.models.User;
 import com.jwt.authentication.payload.request.SignupRequest;
 import com.jwt.authentication.services.UserService;
@@ -8,10 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 
@@ -29,8 +28,19 @@ public class UserController {
     }
 
     @PostMapping("/save-user")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> saveUser(@Valid @RequestBody User user) {
         return ResponseEntity.ok( userService.doSaveUser(user));
+    }
+
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> updateUser(@Valid @RequestBody User user) {
+        return ResponseEntity.ok( userService.updateUser(user));
+    }
+
+    @GetMapping("/autocomplete/search")
+    public ResponseEntity<List<User>> searchAutocompleteUsers(@RequestParam String q  ) {
+        List<User> result = userService.searchAutocompleteUsers(q);
+        return ResponseEntity.ok(result);
     }
 
 }
