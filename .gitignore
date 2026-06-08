@@ -44,7 +44,7 @@ mvnw.cmd
 logs/
 captures
 ### document ###
-documents/
+documents/files/
 captures/
 
 # JWT Keys
