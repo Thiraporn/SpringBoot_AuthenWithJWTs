@@ -30,7 +30,7 @@ Shows the login process using Spring Security, JWT authentication, and Refresh T
 ### 🛡 Authorization Flow and Refresh Token Flow
 Demonstrates JWT validation, Spring Security filter chain, and protected API access. 
 
-![Authorization Flow](documents/images/access-token-expired-&&-refresh token-sequence-diagram.png)
+![Authorization Flow](documents/images/access-token-expired-&&-refresh-token-sequence-diagram.png)
 
 
 [//]: # (### 👥 RBAC & Dynamic Menu Authorization)
