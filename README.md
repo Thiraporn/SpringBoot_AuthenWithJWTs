@@ -7,6 +7,41 @@
 This project is part of my learning journey, where I explore how to design and build backend systems step by step using Spring Boot and JWT authentication.
 I created this repository as a hands-on learning space for experimentation, practice, and continuous improvement. The goal is to understand real-world authentication flows and apply best practices in backend development.
 
+## 🏗 Diagrams
+
+The system is designed with a microservice-ready architecture.
+This section provides an overview of the system architecture, authentication flow, authorization process, and database design.
+### 📐 High-Level Architecture
+Illustrates the overall system architecture, deployment environment, microservices, shared libraries, and databases.
+
+![High-Level Architecture](documents/images/high-level-architecture.png)
+
+### 🗄 Database Design (ER Diagram)
+Illustrates relationships among Users, Roles, Permissions, Menus, Organizations, and Refresh Tokens.
+
+![ER Diagram](documents/images/login-auten-er-diagram-mongoDB-generate.png)
+
+### 🔐 Authentication Flow
+Shows the login process using Spring Security, JWT authentication, and Refresh Token generation.
+
+
+![Authentication Flow](documents/images/login-sequence-diagram.png)
+
+### 🛡 Authorization Flow and Refresh Token Flow
+Demonstrates JWT validation, Spring Security filter chain, and protected API access. 
+
+![Authorization Flow](documents/images/access-token-expired-&&-refresh-token-sequence-diagram.png)
+
+
+[//]: # (### 👥 RBAC & Dynamic Menu Authorization)
+
+[//]: # (Shows how menus are dynamically generated based on user roles and permissions.)
+
+[//]: # ()
+[//]: # (![RBAC Menu Flow]&#40;docs/images/rbac-menu-flow.png&#41;)
+ 
+
+ 
 
  ## 📦 Common Libraries
 

@@ -5,5 +5,6 @@ public enum ERole {
     SUPERUSER,
     EDITOR,
     ADMIN,
-    ANONYMOUS
+    ANONYMOUS,
+    UNDEFINED
 }
