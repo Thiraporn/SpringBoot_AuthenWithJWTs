@@ -16,12 +16,6 @@ Illustrates the overall system architecture, deployment environment, microservic
 
 ![High-Level Architecture](documents/images/high-level-architecture.png)
 
-### 📐 Spring Boot Security + JWT Architecture
-Provides a visual overview of how Spring Security and JWT authentication work together to secure a Spring Boot REST API.
-
-![High-Level Architecture](documents/images/springboot-security+jwt-architecture.png)
-
-
 ### 🗄 Database Design (ER Diagram)
 Illustrates relationships among Users, Roles, Permissions, Menus, Organizations, and Refresh Tokens.
 
