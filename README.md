@@ -110,43 +110,64 @@ This project integrates a shared library to centralize reusable components and e
 - Swagger/OpenAPI documentation
 - Docker containerization
 - CI/CD with GitHub Actions
-- Service-to-service communication architecture
-- Integration with
-  <a href="https://github.com/Thiraporn/olist-service" target="_blank">
-  olist-service
+- Software
+  <a href="https://github.com/Thiraporn/Development-Documents/tree/main/documents" target="_blank">
+  Development Documentation
   </a>
-  to support analytics workflows and data processing based on the
-  <a href="https://github.com/Thiraporn/olist_e_commerce" target="_blank">
-  Olist e-commerce analytics project
-  </a>
-- Software Development Documentation
+
+
+[//]: # (- Service-to-service communication architecture)
+
+[//]: # (- Integration with)
+
+[//]: # (  <a href="https://github.com/Thiraporn/olist-service" target="_blank">)
+
+[//]: # (  olist-service)
+
+[//]: # (  </a>)
+
+[//]: # (  to support analytics workflows and data processing based on the)
+
+[//]: # (  <a href="https://github.com/Thiraporn/olist_e_commerce" target="_blank">)
+
+[//]: # (  Olist e-commerce analytics project)
+
+[//]: # (  </a>)
+ 
 
 [//]: # (- Jacoco test coverage)
 
+
+## 🚀 Version
+
+* `0.0.1-SNAPSHOT` → first release authentication-service  (12/5/2026 5.00 p.m.)
+
 ## 🌐 Related Projects
- 
-- Integrated and migrated authentication system to Spring Boot Security with JWT:   
+
+- Integrated and migrated authentication system to other service:  
+  This is Service-to-service communication refers to the methods used by one microservice to talk to another.
+
   <img src="https://img.shields.io/badge/Current-Now Focus-success?style=flat-square"/>
-  <img src="https://skillicons.dev/icons?i=java,spring,mongodb" height="20"/>  
-  <a href="https://github.com/Thiraporn/SpringBoot_AuthenWithJWTs" target="_blank">
-    This Repository
-  </a>|<a href="https://springboot-authenjwtswithmongodb.onrender.com" target="_blank">
-    API Health Check
-  </a> 
+  <img src="https://skillicons.dev/icons?i=java,spring,postgres,kotlin,postman" height="20"/>
+  <p><a href="https://github.com/Thiraporn/olist-service" target="_blank">
+   Olist Service (Springboot/Kotlin)
+  </a></p>
+
+  [//]: # (  |<a href="https://springboot-authenjwtswithmongodb.onrender.com" target="_blank"> API Health Check </a> )
+  
   <br/>  
   <br/> 
 - Frontend React Application:  
   <img src="https://img.shields.io/badge/Current-Now Focus-success?style=flat-square"/> 
-  <img src="https://skillicons.dev/icons?i=react,typescript,tailwind,vite" height="20"/>  
-  <a href="https://github.com/Thiraporn/react_login_register" target="_blank">
+  <img src="https://skillicons.dev/icons?i=react,typescript,tailwind,vite" height="20"/>   
+  <p><a href="https://github.com/Thiraporn/react_login_register" target="_blank">
   React Frontend Repository
   </a>|<a href="https://login-register-ui-demo.netlify.app" target="_blank">
   View Demo
-  </a>
+  </a></p>
   <br/>  
   <br/> 
 
 [//]: # (## 🚀 Future Plans )
 
 [//]: # (I plan to integrate this backend with a React frontend project:  <a href="https://github.com/Thiraporn/react_login_register"> React Repo </a> | <a href="https://login-register-ui-demo.netlify.app/" target="_blank">View Demo</a> )
- 
