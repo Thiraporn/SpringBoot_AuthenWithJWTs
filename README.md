@@ -99,11 +99,52 @@ This project integrates a shared library to centralize reusable components and e
 - Designed for microservice integration
 - Prepared for service-to-service communication 
 
-## 🧪 Testing
+## 🧪 Automated Testing
 
 - Unit Testing with JUnit5 & Mockito
 - Integration Testing with SpringBootTest
 - JWT Authentication Flow Testing
+
+
+## 🧪 API Testing
+
+The following screenshots demonstrate API testing using **Postman**.
+
+### 1. Register
+
+![Register API](documents/images/register.png)
+
+### 2. Authentication
+
+![Authentication API](documents/images/authen.png)
+
+### 3. Refresh Token
+
+![Refresh Token API](documents/images/refreshtoken.png)
+
+### 4. Sample API Call
+Business Question : What are the top 10 best-selling products by number of orders?
+![Top 10 Best Selling Products](documents/images/Top10BestSellingProducts.png)
+ 
+
+### 5. Error Handling
+
+- **Account Already Exists**
+
+  ![Account Already Exists](documents/images/register_exist_account.png)
+  </br>
+  </br>
+- **Unauthorized**
+
+  ![Unauthorized](documents/images/auhten_wrong_pass_user.png)
+  </br>
+  </br>
+- **Logout or Calling API Without Authentication**
+
+  ![Logout](documents/images/logout.png)
+
+  ![Calling API Without Authentication](documents/images/logout_nerver_authen.png)
+
 
 ## 🚧 Ongoing Improvements
 
@@ -141,6 +182,7 @@ This project integrates a shared library to centralize reusable components and e
 ## 🚀 Version
 
 * `0.0.1-SNAPSHOT` → first release authentication-service  (12/5/2026 5.00 p.m.)
+
 
 ## 🌐 Related Projects
 
